@@ -1,16 +1,43 @@
 # watchit
 
-Watch movies and tv shows for free
+Torrent based application for watching and downloading movies.
 
-## Getting Started
+Android and iOS application,
 
-This project is a starting point for a Flutter application.
+Responsive application made for different screen resolutions and orientations.
 
-A few resources to get you started if this is your first Flutter project:
+## API's & Libraries Used
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+<a href="https://yts.mx/api">YIFY API (for movies)</a>
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+<a href="https://pub.dev/packages/line_awesome_icons">Line Awesome Icons</a>
+
+<a href="https://pub.dev/packages/shared_preferences">Shared Preferences</a>
+
+<a href="https://pub.dev/packages/sqflite">SQL lite</a>
+
+<a href="https://pub.dev/packages/cached_network_image">Cached Network Image</a>
+
+<a href="https://pub.dev/packages/connectivity">Connectivity</a>
+
+<a href="https://pub.dev/packages/permission_handler">Permission Handler</a>
+
+<a href="https://pub.dev/packages/device_info">Device Info</a>
+
+<a href="https://pub.dev/packages/http">HTTP</a>
+
+Initial commit was made after completing 70% of application.
+
+## Screenshots
+
+iOS screenshots not there, I don't have a mac :pensive: :pensive:.
+
+<p align="center">
+  <img src="https://github.com/vikanshu-joshi/WatchIt/blob/master/screenshots/home.jpg" width="360" height="640"/>
+  <img src="https://github.com/vikanshu-joshi/WatchIt/blob/master/screenshots/search.jpg" width="360" height="640"/>
+  <img src="https://github.com/vikanshu-joshi/WatchIt/blob/master/screenshots/detail.jpg" width="360" height="640"/>
+</p>
+
+
+
+

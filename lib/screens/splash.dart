@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_page_transition/flutter_page_transition.dart';
 import 'package:watchit/screens/home.dart';
 
 class SplashScreen extends StatefulWidget {
