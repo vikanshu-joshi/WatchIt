@@ -7,6 +7,7 @@ import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:line_awesome_icons/line_awesome_icons.dart';
 import 'package:watchit/screens/search_screen.dart';
+import 'package:connectivity/connectivity.dart';
 import 'dart:convert' as convert;
 
 import 'movie_detail.dart';
@@ -36,11 +37,39 @@ class _HomeScreenState extends State<HomeScreen> {
   List<LinkedHashMap<dynamic, dynamic>> json =
       List<LinkedHashMap<dynamic, dynamic>>(12);
   List<http.Response> response = List<http.Response>(12);
+  bool _networkConnection = true;
+  StreamSubscription<ConnectivityResult> _networkListener;
 
   @override
   void initState() {
+    _connectivityChecker();
     _getMoviesList();
+    _networkListener =
+        Connectivity().onConnectivityChanged.listen((connectivityResult) {
+      bool result = (connectivityResult == ConnectivityResult.mobile ||
+          connectivityResult == ConnectivityResult.wifi);
+      if (!_networkConnection && result) {
+        _networkConnection = true;
+        _getMoviesList();
+      } else if (_networkConnection && !result) {
+        _networkConnection = false;
+      }
+      setState(() {});
+    });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _networkListener.cancel();
+    super.dispose();
+  }
+
+  void _connectivityChecker() async {
+    var connectivityResult = await Connectivity().checkConnectivity();
+    _networkConnection = (connectivityResult == ConnectivityResult.mobile ||
+        connectivityResult == ConnectivityResult.wifi);
+    if (mounted) setState(() {});
   }
 
   Future<void> _getMoviesList() async {
@@ -65,11 +94,33 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Widget _mainScreen(MediaQueryData mQuery, int _index,Orientation orientation) {
+  Widget _noConnectionScreen(MediaQueryData mQuery) {
+    return Container(
+      width: mQuery.size.width,
+      height: mQuery.size.height,
+      color: Colors.white,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Image.asset(
+            'assets/images/error.png',
+            width: mQuery.size.width * 0.3,
+            height: mQuery.size.height * 0.3,
+          ),
+          Text('No Internet',style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontSize: 22),)
+        ],
+      ),
+    );
+  }
+
+  Widget _mainScreen(
+      MediaQueryData mQuery, int _index, Orientation orientation) {
     return Container(
       color: Color.fromRGBO(70, 70, 70, 1),
       padding: const EdgeInsets.all(5),
-      height: orientation == Orientation.portrait ? mQuery.size.height * 0.35 : mQuery.size.height * 0.7,
+      height: orientation == Orientation.portrait
+          ? mQuery.size.height * 0.35
+          : mQuery.size.height * 0.7,
       width: mQuery.size.width,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -94,20 +145,25 @@ class _HomeScreenState extends State<HomeScreen> {
                         ? Container(
                             color: Colors.white,
                             margin: const EdgeInsets.all(5),
-                            width: orientation == Orientation.portrait ? mQuery.size.width * 0.4 : mQuery.size.width * 0.2,
+                            width: orientation == Orientation.portrait
+                                ? mQuery.size.width * 0.4
+                                : mQuery.size.width * 0.2,
                             child: CupertinoActivityIndicator(),
                           )
                         : GestureDetector(
                             onTap: () {
                               Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (_) => MovieDetail(json[_index]['data']['movies'][index])));
+                                  builder: (_) => MovieDetail(
+                                      json[_index]['data']['movies'][index])));
                             },
                             child: Tooltip(
                               message: json[_index]['data']['movies'][index]
                                   ['title_long'],
                               child: Container(
                                 margin: const EdgeInsets.all(5),
-                                width: orientation == Orientation.portrait ? mQuery.size.width * 0.4 : mQuery.size.width * 0.2,
+                                width: orientation == Orientation.portrait
+                                    ? mQuery.size.width * 0.4
+                                    : mQuery.size.width * 0.2,
                                 child: CachedNetworkImage(
                                   imageUrl: json[_index]['data']['movies']
                                       [index]['medium_cover_image'],
@@ -116,14 +172,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                     return Container(
                                       padding: const EdgeInsets.all(55),
                                       color: Color.fromRGBO(90, 90, 90, 1),
-                                      child: Image.asset('assets/images/logo.png'),
+                                      child:
+                                          Image.asset('assets/images/logo.png'),
                                     );
                                   },
                                   errorWidget: (c, s, _) {
                                     return Container(
                                       padding: const EdgeInsets.all(55),
                                       color: Color.fromRGBO(90, 90, 90, 1),
-                                      child: Image.asset('assets/images/logo.png'),
+                                      child:
+                                          Image.asset('assets/images/logo.png'),
                                     );
                                   },
                                 ),
@@ -143,27 +201,37 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: Color.fromRGBO(80, 80, 80, 1),
       appBar: AppBar(
         leading: Padding(
-          padding: const EdgeInsets.symmetric(vertical:15),
-          child: Image.asset('assets/images/logo.png',),
+          padding: const EdgeInsets.symmetric(vertical: 15),
+          child: Image.asset(
+            'assets/images/logo.png',
+          ),
         ),
         title: Text('Home'),
-        actions: <Widget>[
-          IconButton(icon: Icon(LineAwesomeIcons.search), onPressed: (){
-            Navigator.of(context).pushNamed(SearchScreen.route);
-          }),
-          IconButton(icon: Icon(LineAwesomeIcons.heart_o), onPressed: (){}),
-          IconButton(icon: Icon(LineAwesomeIcons.download), onPressed: (){}),
-        ],
+        actions: _networkConnection
+            ? <Widget>[
+                IconButton(
+                    icon: Icon(LineAwesomeIcons.search),
+                    onPressed: () {
+                      Navigator.of(context).pushNamed(SearchScreen.route);
+                    }),
+                IconButton(
+                    icon: Icon(LineAwesomeIcons.heart_o), onPressed: () {}),
+                IconButton(
+                    icon: Icon(LineAwesomeIcons.download), onPressed: () {}),
+              ]
+            : <Widget>[],
       ),
-      body: OrientationBuilder(
-        builder: (ctx,orientation) => ListView.builder(
-            itemCount: _genre.length,
-            itemBuilder: (_, index) {
-              return Padding(
-                  padding: const EdgeInsets.only(top: 20),
-                  child: _mainScreen(mQuery, index,orientation));
-            }),
-      ),
+      body: _networkConnection
+          ? OrientationBuilder(
+              builder: (ctx, orientation) => ListView.builder(
+                  itemCount: _genre.length,
+                  itemBuilder: (_, index) {
+                    return Padding(
+                        padding: const EdgeInsets.only(top: 20),
+                        child: _mainScreen(mQuery, index, orientation));
+                  }),
+            )
+          : _noConnectionScreen(mQuery),
     );
   }
 }

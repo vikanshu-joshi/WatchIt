@@ -18,7 +18,7 @@ class _SplashScreenState extends State<SplashScreen>
   void initState() {
     _controller = AnimationController(
         vsync: this, duration: Duration(milliseconds: 2000));
-    _controller.forward();
+    Future.delayed(Duration(seconds: 1), () => _controller.forward());
     super.initState();
   }
 
@@ -36,11 +36,13 @@ class _SplashScreenState extends State<SplashScreen>
         child: Align(
           child: ScaleTransition(
             scale: Tween(begin: 0.0, end: 0.4).animate(
-                CurvedAnimation(parent: _controller, curve: Curves.bounceOut))..addStatusListener((status) {
-                  if(status == AnimationStatus.completed){
-                    Navigator.of(context).pushReplacementNamed(HomeScreen.route);
-                  }
-            }),
+                CurvedAnimation(parent: _controller, curve: Curves.bounceOut))
+              ..addStatusListener((status) {
+                if (status == AnimationStatus.completed) {
+                  Navigator.of(context)
+                      .pushReplacementNamed(HomeScreen.route);
+                }
+              }),
             child: Image.asset(
               'assets/images/logo.png',
             ),
