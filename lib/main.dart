@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:watchit/screens/favourites.dart';
 import 'package:watchit/screens/home.dart';
 import 'package:watchit/screens/search_screen.dart';
 import 'package:watchit/screens/splash.dart';
@@ -22,7 +23,8 @@ class MyApp extends StatelessWidget {
       routes: {
         SplashScreen.route : (_) => SplashScreen(),
         HomeScreen.route: (_) => HomeScreen(),
-        SearchScreen.route: (_) => SearchScreen()
+        SearchScreen.route: (_) => SearchScreen(),
+        FavouritesScreen.route: (_) => FavouritesScreen()
       },
     );
   }

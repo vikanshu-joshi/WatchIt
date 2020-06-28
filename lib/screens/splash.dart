@@ -5,6 +5,7 @@ import 'package:watchit/screens/home.dart';
 
 class SplashScreen extends StatefulWidget {
   static const route = 'splash';
+  static var database;
 
   @override
   _SplashScreenState createState() => _SplashScreenState();
@@ -21,6 +22,8 @@ class _SplashScreenState extends State<SplashScreen>
     Future.delayed(Duration(seconds: 1), () => _controller.forward());
     super.initState();
   }
+
+
 
   @override
   void dispose() {
@@ -39,8 +42,7 @@ class _SplashScreenState extends State<SplashScreen>
                 CurvedAnimation(parent: _controller, curve: Curves.bounceOut))
               ..addStatusListener((status) {
                 if (status == AnimationStatus.completed) {
-                  Navigator.of(context)
-                      .pushReplacementNamed(HomeScreen.route);
+                  Navigator.of(context).pushReplacementNamed(HomeScreen.route);
                 }
               }),
             child: Image.asset(

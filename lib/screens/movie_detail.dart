@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:line_awesome_icons/line_awesome_icons.dart';
+import 'package:watchit/database.dart';
 
 class MovieDetail extends StatefulWidget {
   final LinkedHashMap<String, dynamic> detail;
@@ -21,8 +22,9 @@ class MovieDetail extends StatefulWidget {
 class _MovieDetailState extends State<MovieDetail> {
   LinkedHashMap<dynamic, dynamic> json;
   PageController _screenshotsController;
-  int _page = 0;
   LinkedHashMap<dynamic, dynamic> _suggestionsData;
+  FavouritesProvider _favourites;
+  bool _isFavourite = false;
 
   void _getMovieDetail() async {
     var response = await http.get(
@@ -40,13 +42,17 @@ class _MovieDetailState extends State<MovieDetail> {
 
   @override
   void initState() {
+    _favourites = FavouritesProvider();
     _screenshotsController = PageController(initialPage: 0, keepPage: false);
-    Timer.periodic(Duration(seconds: 3), (timer){
-      _page++;
-      _page = _page % 3;
-      _screenshotsController.animateToPage(_page, duration: Duration(seconds: 1), curve: Curves.ease);
-    });
     _getMovieDetail();
+    _favourites.open('favourites.db').then((_) {
+      _favourites.getFavourites(widget.detail['id'].toString()).then((value) {
+        if (value != null) {
+          _isFavourite = true;
+          if (mounted) setState(() {});
+        }
+      });
+    });
     super.initState();
   }
 
@@ -107,6 +113,12 @@ class _MovieDetailState extends State<MovieDetail> {
   }
 
   @override
+  void dispose() {
+    _favourites.close();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     var mQuery = MediaQuery.of(context);
     return Scaffold(
@@ -152,7 +164,7 @@ class _MovieDetailState extends State<MovieDetail> {
                       Container(
                           child: ListTile(
                         title: Text(
-                          widget.detail['title_english'],
+                          widget.detail['title'],
                           style: TextStyle(
                               color: Colors.white,
                               fontSize: 22,
@@ -160,10 +172,33 @@ class _MovieDetailState extends State<MovieDetail> {
                         ),
                         trailing: IconButton(
                             icon: Icon(
-                              LineAwesomeIcons.heart_o,
-                              color: Colors.white,
+                              _isFavourite
+                                  ? LineAwesomeIcons.heart
+                                  : LineAwesomeIcons.heart_o,
+                              color: _isFavourite ? Colors.red : Colors.white,
                             ),
-                            onPressed: () {}),
+                            onPressed: () {
+                              if (_isFavourite) {
+                                _isFavourite = false;
+                                _favourites
+                                    .delete(widget.detail['id'].toString());
+                              } else {
+                                _isFavourite = true;
+                                var data = Favourites(
+                                    widget.detail['id'].toString(),
+                                    widget.detail['title'].toString(),
+                                    widget.detail['title_long'].toString(),
+                                    widget.detail['year'].toString(),
+                                    widget.detail['rating'].toString(),
+                                    widget.detail['runtime'].toString(),
+                                    widget.detail['description_full']
+                                        .toString(),
+                                    widget.detail['medium_cover_image']
+                                        .toString());
+                                _favourites.insert(data);
+                              }
+                              setState(() {});
+                            }),
                       )),
                       Container(
                         alignment: Alignment.centerRight,
@@ -249,8 +284,8 @@ class _MovieDetailState extends State<MovieDetail> {
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: <Widget>[
                               RaisedButton.icon(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 10),
+                                padding: const EdgeInsets.only(
+                                    top: 10, bottom: 10, right: 20, left: 10),
                                 onPressed: () {},
                                 icon: Icon(LineAwesomeIcons.play,
                                     color: Colors.white),
@@ -260,8 +295,8 @@ class _MovieDetailState extends State<MovieDetail> {
                                 color: Colors.green,
                               ),
                               RaisedButton.icon(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 10),
+                                padding: const EdgeInsets.only(
+                                    top: 10, bottom: 10, right: 20, left: 10),
                                 onPressed: () {},
                                 icon: Icon(LineAwesomeIcons.download,
                                     color: Colors.white),

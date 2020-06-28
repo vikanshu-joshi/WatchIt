@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:line_awesome_icons/line_awesome_icons.dart';
+import 'package:watchit/screens/favourites.dart';
 import 'package:watchit/screens/search_screen.dart';
 import 'package:connectivity/connectivity.dart';
 import 'dart:convert' as convert;
@@ -215,7 +216,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       Navigator.of(context).pushNamed(SearchScreen.route);
                     }),
                 IconButton(
-                    icon: Icon(LineAwesomeIcons.heart_o), onPressed: () {}),
+                    icon: Icon(LineAwesomeIcons.heart_o), onPressed: () {
+                      Navigator.pushNamed(context, FavouritesScreen.route);
+                }),
                 IconButton(
                     icon: Icon(LineAwesomeIcons.download), onPressed: () {}),
               ]
