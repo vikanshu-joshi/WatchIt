@@ -37,6 +37,7 @@ iOS screenshots not there, I don't have a mac :pensive: :pensive:.
   <img src="https://github.com/vikanshu-joshi/WatchIt/blob/master/screenshots/search.jpg" width="360" height="640"/>
   <img src="https://github.com/vikanshu-joshi/WatchIt/blob/master/screenshots/detail.jpg" width="360" height="640"/>
   <img src="https://github.com/vikanshu-joshi/WatchIt/blob/master/screenshots/no_network.jpg" width="360" height="640"/>
+  <img src="https://github.com/vikanshu-joshi/WatchIt/blob/master/screenshots/favourites.jpg" width="360" height="640"/>
 </p>
 
 
